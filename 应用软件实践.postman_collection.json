@@ -1,0 +1,372 @@
+{
+	"info": {
+		"_postman_id": "ec6b2477-baa4-40cd-9ac8-a874eccd4c6b",
+		"name": "应用软件实践",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "登录",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "name",
+							"value": "root",
+							"description": "登录用户名 目前只有 root",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "123456",
+							"description": "登录用户密码 ",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"login"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "root",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "123456",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "注销",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/logout",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "添加用户",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "name",
+							"value": "root",
+							"description": "新增用户的名字 ‘必填",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "123456",
+							"description": "用户的密码 必填",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/add_user",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"add_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "删除用户",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "name",
+							"value": "xq",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/del_user",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"del_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "修改用户",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "name",
+							"value": "xq12",
+							"description": "必填 哪个用户被修改",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "12345612",
+							"description": "必填 修改用户的密码",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/set_user",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"set_user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "查询用户",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/get_user",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"get_user"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "q",
+							"description": "根据用户名查询用户 ，可选参数",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "添加文章",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "name",
+							"value": "xq1",
+							"description": "用户的名字 (发表文章的用户名，确保存在要不然会报错) 必须存在",
+							"type": "text"
+						},
+						{
+							"key": "author",
+							"value": "1232",
+							"description": "文章的作者 自定义 可选",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "content",
+							"value": "12332",
+							"description": "文章的内容",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "1234",
+							"description": "文章的标题",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/add_article",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"add_article"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "删除文章",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "id",
+							"value": "2",
+							"description": "删除的文章的id 必须填",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/del_article",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"del_article"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "修改文章",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "id",
+							"value": "3",
+							"description": "必填，表示被修改的文章的id，下面4个参数4各种必须要有1个要不然会报错，你修改了个寂寞",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "1",
+							"description": "可选 修改题目为",
+							"type": "text"
+						},
+						{
+							"key": "author",
+							"value": "2",
+							"description": "可选 修改作者为",
+							"type": "text"
+						},
+						{
+							"key": "content",
+							"value": "3",
+							"description": "可选 修改内容为",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "xq",
+							"description": "可选 修改发表名字为",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/set_article",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"set_article"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "查询文章",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/get_article",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"get_article"
+					],
+					"query": [
+						{
+							"key": "author",
+							"value": "r",
+							"description": "作者 模糊查询 可选",
+							"disabled": true
+						},
+						{
+							"key": "name",
+							"value": "r",
+							"description": "名字 模糊查询 可选",
+							"disabled": true
+						},
+						{
+							"key": "title",
+							"value": null,
+							"description": "标题 模糊查询 可选",
+							"disabled": true
+						},
+						{
+							"key": "content",
+							"value": "x",
+							"description": "内容 模糊查询 可选",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
