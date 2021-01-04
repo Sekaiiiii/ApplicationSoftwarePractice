@@ -4,36 +4,33 @@
       <el-header></el-header>
       <el-main>
         <div class="login-form-box">
-          <el-form>
-            <el-form-item>
-              <el-input prefix-icon="el-icon-user" placeholder="请输入用户名" v-model="form.name"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-input
-                prefix-icon="el-icon-user"
-                placeholder="请输入密码"
-                v-model="form.password"
-                type="password"
-              ></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-row>
-                <el-col :span="24">
-                  <el-button
-                    style="width:100%"
-                    type="primary"
-                    @click="onSubmit"
-                    v-loading.fullscreen.lock="fullscreenLoading"
-                  >登录</el-button>
-                </el-col>
-              </el-row>
-              <el-row style="margin-top:10px">
-                <el-col :span="24">
-                  <el-button style="width:100%" type="info" @click="reset">重置</el-button>
-                </el-col>
-              </el-row>
-            </el-form-item>
-          </el-form>
+                <el-form
+                   :model="user"
+                   :rules="rules"
+                   ref="ruleForm"
+                   class="demo-ruleForm"
+                >
+                   <el-form-item prop="username">
+                    <el-input
+                      v-model="user.username"
+                      @focus="clearprams('username')"
+                      placeholder="请输入用户名"
+                    >
+                      <i slot="prefix" class="el-input__icon el-icon-user-solid"></i
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item prop="password">
+                  <!--使用获得焦点，清除之前判断结果 -->
+                    <el-input
+                        v-model="user.password"
+                        type="password"
+                        @focus="clearprams('password')"
+                        placeholder="请输入密码"
+                    >
+                        <i slot="prefix" class="el-input__icon el-icon-key"></i
+                    ></el-input>
+                </el-form-item>
+            </el-form>
         </div>
       </el-main>
       <el-footer></el-footer>
@@ -42,89 +39,69 @@
 </template>
 
 <script>
+import { login } from "@/apis/user";
 export default {
   data() {
     return {
-      fullscreenLoading: false,
-      form: {
-        name: "",
-        password: ""
-      }
+      user: {
+        username: "",
+        password: "",
+      },
+      rules: {
+        username: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+          {
+            pattern: /^1\d{4}$|(^(13[0-9]|14[5|7]|15[0|1|2|3|4|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$)/,
+            message: "请输入5位或13位电话号码",
+            trigger: "blur",
+          },
+        ],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          {
+            min: 3,
+            max: 15,
+            message: "长度在 3 到 15 个字符",
+            trigger: "blur",
+          },
+        ],
+      },
     };
   },
   methods: {
-    onSubmit() {
-      var vm = this;
-      vm.fullscreenLoading = true;
-
-      vm.$http({
-        method: "post",
-        url: "/api/web/login",
-        data: {
-          name: vm.form.name,
-          password: vm.form.password
-        }
-      })
-        .then(function(res) {
-          vm.fullscreenLoading = false;
-          if (res.data.status == 1) {
-            //设置登录状态
-            vm.$store.commit("setLoginStatu", true);
-            vm.$store.commit("setUserInfo", res.data.data);
-            vm.$message({
-              message: res.data.data.msg,
-              center: true
-            });
-            vm.$router.replace({
-              path: "/index/main"
-            });
-          } else {
-            vm.$message({
-              message: res.data.error_des,
-              center: true
-            });
-          }
-        })
-        .catch(function(err) {
-          vm.fullscreenLoading = false;
-          console.error(err);
-          vm.$message({
-            message: "请求失败，请重试",
-            center: true
-          });
-        });
+    // 希望用户在输入的时候，把之前监测判断的输入清掉(用户体验)
+    // 必须要传入参数，不然会把所有其他校检清除
+    clearprams(prop) {
+      this.$refs.ruleForm.clearValidate(prpo);
     },
-    reset() {
-      this.form.name = "";
-      this.form.password = "";
-    }
-  },
-  beforeCreate() {
-    var vm = this;
-    document.title = "博物馆后台管理系统登录页面";
-    //检查cookie是否已登录
-    vm.$http({
-      method: "get",
-      url: "/api/web/get_login_state"
-    })
-      .then(res => {
-        console.log(res);
-        if (res.data.data.is_login) {
-          vm.$store.commit("setLoginStatu", true);
-          vm.$store.commit("setUserInfo", res.data.data);
-          vm.$router.replace({
-            path: "/index/main"
-          });
+    login() {
+      //validate函数里面使用一个回调函数是一个布尔值，表示input框里面的参数是否正确
+      this.$refs.ruleForm.validate(async (success) => {
+        if (success) {
+          // console.log(success, "我去登录了");
+          // 发送axios请求
+          let res = await login(this.user);
+          console.log(res);
+          console.log(res.data.message);
+          if (res.data.message === "登录成功") {
+            this.$message.success(res.data.message);
+            // 成功登陆验证，把token，user信息存到本地
+            window.localStorage.setItem(
+              "toutiao_houtai_token_user",
+              JSON.stringify(res.data.data)
+            );
+            // 登录成功跳转登录页面
+            this.$router.push({ name: "index" });
+          } else {
+            this.$message.error(res.data.message);
+          }
+        } else {
+          this.$message.error("输入的用户名或密码不合法");
+          // console.log(success, "验证错误");
         }
-      })
-      .catch(err => {
-        console.error(err);
-        vm.message({
-          message: "获取当前登录状态失败",
-          center: true
-        });
       });
-  }
+    },
+  },
 };
 </script>
 
@@ -138,12 +115,10 @@ h1 {
   background-image: url("../assets/login-background-image2.jpg");
   background-size: 100%;
 }
-
 .el-icon-user {
   display: block;
   font-size: 30px;
 }
-
 .login-form-box {
   height: 240px;
   width: 400px;
@@ -151,18 +126,15 @@ h1 {
   padding-bottom: 15px;
   padding-right: 15px;
   padding-left: 15px;
-
   position: absolute;
   margin: auto;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-
   border-radius: 10%;
   background-image: url("../assets/login-form-background-image1.jpg");
 }
-
 .el-input {
   width: 400px;
 }
