@@ -1,0 +1,27 @@
+1. 找到github 仓库
+https://github.com/Sekaiiiii/ApplicationSoftwarePractice.git 仓库链接
+2. 安装git环境 有的话就可以 没有的话 自己安装
+3. 创建文件夹，进入文件夹，输入git init 初始化文件夹
+输出类似 Initialized empty Git repository in /mnt/c/Users/sekai/Desktop/testGit/.git/
+4. 给git 添加远程仓库 
+git remote add origin https://github.com/Sekaiiiii/ApplicationSoftwarePractice.git
+输入 git remote -v 检查 是否添加成功
+origin  https://github.com/Sekaiiiii/ApplicationSoftwarePractice.git (fetch)
+origin  https://github.com/Sekaiiiii/ApplicationSoftwarePractice.git (push)
+5. 拉取代码 git fetch origin master
+6. 拉取完成后 合并至本地分支 git merge origin/master
+合并完成以后 输入 dir等命令可以检查当前目录是否有文件，有文件则成功了
+
+7. 代码拉取完成以后，就要修改或者添加代码了。
+涉及到的命令有 (使用vscode的插件可以 方便的操作=)
+git status  查看当前文件夹 文件修改的状态
+git add 文件名 将文件添加到本地缓存
+git commit -m "提交信息" 将缓存提交到git
+提交完成以后 ，就需要推送到远程的github仓库
+git push origin master 意思是 推送到 远程仓库 origin 的master分支
+看看提交是否完成。
+
+这一次git push 没出什么问题。出现其他问题在解决-  大概就这么一些，具体的看 廖雪峰的git教程。
+https://www.liaoxuefeng.com/wiki/896043488029600
+
+

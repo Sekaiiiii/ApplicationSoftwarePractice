@@ -4,7 +4,7 @@
       <el-header height="50px">
         <el-row class="header-line" type="flex" justify="end">
           <el-col class="header-line-col" :span="5">
-            <div class="header-line-div">
+            <!-- <div class="header-line-div">
               <i class="el-icon-eleme"></i>
               <span>{{user_info.mail_address}}</span>
             </div>
@@ -16,7 +16,11 @@
               <template v-if="user_info.root_permission == '0'">
                 <span>一般管理员</span>
               </template>
-            </div>
+            </div> -->
+            <!-- <div class="header-line-div">
+              <i class="el-icon-user-solid"></i>
+              <span>{{user_info.name}}</span>
+            </div> -->
             <div class="header-line-div">
               <i class="el-icon-user-solid"></i>
               <span>{{user_info.name}}</span>
@@ -47,30 +51,13 @@
                   <i class="el-icon-location"></i>
                   <span slot="title">数据管理</span>
                 </template>
-                <el-menu-item index="/index/museum">博物馆信息</el-menu-item>
-                <el-menu-item index="/index/exhibition">展览信息</el-menu-item>
-                <el-menu-item index="/index/education_activity">教育活动信息</el-menu-item>
-                <el-menu-item index="/index/collection">藏品信息</el-menu-item>
-                <el-menu-item index="/index/new">新闻信息</el-menu-item>
-                <el-menu-item index="/index/explain">讲解信息</el-menu-item>
-                <el-menu-item index="/index/comment">评论信息</el-menu-item>
+                <el-menu-item index="/index/user">用户管理</el-menu-item>
+                <el-menu-item index="/index/article">文章管理</el-menu-item>
               </el-submenu>
-              <el-menu-item index="/index/user">
-                <i class="el-icon-menu"></i>
-                <span slot="title">用户管理</span>
-              </el-menu-item>
-              <el-menu-item index="/index/admin">
-                <i class="el-icon-menu"></i>
-                <span slot="title">管理员管理</span>
-              </el-menu-item>
-              <el-menu-item index="/index/audit">
-                <i class="el-icon-menu"></i>
-                <span slot="title">讲解审核</span>
-              </el-menu-item>
-              <el-menu-item index="/index/database">
+              <!-- <el-menu-item index="/index/database">
                 <i class="el-icon-menu"></i>
                 <span slot="title">数据库备份与恢复</span>
-              </el-menu-item>
+              </el-menu-item> -->
               <el-menu-item @click="logout" v-loading.fullscreen.lock="fullscreenLoading">
                 <i class="el-icon-setting"></i>
                 <span slot="title">退出登录</span>
@@ -92,13 +79,8 @@ export default {
   data() {
     return {
       fullscreenLoading: false,
-
       user_info: {
-        user_id: "",
         name: "",
-        mail_address: "",
-        root_permission: "",
-        admin_permission: ""
       }
     };
   },
@@ -108,7 +90,7 @@ export default {
       vm.fullscreenLoading = true;
       this.$http({
         method: "get",
-        url: "/api/web/logout"
+        url: "/api/logout"
       })
         .then(function(res) {
           console.log(res);
@@ -133,6 +115,7 @@ export default {
             });
           }
         })
+        //捕获错误
         .catch(function(err) {
           vm.fullscreenLoading = false;
           console.error(err);
@@ -152,17 +135,13 @@ export default {
         path: "/login"
       });
     } else {
-      document.title = "博物馆后台管理系统";
+      document.title = "文章管理系统";
     }
   },
   created() {
     let vm = this;
     console.log(vm.user_info);
-    vm.user_info.user_id = vm.$store.state.user_info.user_id;
     vm.user_info.name = vm.$store.state.user_info.name;
-    vm.user_info.mail_address = vm.$store.state.user_info.mail_address;
-    vm.user_info.root_permission = vm.$store.state.user_info.root_permission;
-    vm.user_info.admin_permission = vm.$store.state.user_info.admin_permission;
   },
   mounted() {}
 };

@@ -1,147 +1,120 @@
 <template>
   <div class="user-component">
     <el-container v-loading="table_loading">
+      <!-- 搜索框 -->
       <el-header>
         <div class="form-line-box">
           <el-form :inline="true" :model="search_form" size="mini">
-            <el-form-item v-if="have_param">
-              <el-button @click="goBack">返回上一页</el-button>
-            </el-form-item>
-            <el-form-item label="用户ID">
-              <el-input v-model="search_form.user_id"></el-input>
-            </el-form-item>
             <el-form-item label="用户名">
-              <el-input v-model="search_form.user_name"></el-input>
-            </el-form-item>
-            <el-form-item label="邮箱地址">
-              <el-input v-model="search_form.mail_address"></el-input>
-            </el-form-item>
-            <el-form-item label="禁止评论">
-              <el-select v-model="search_form.no_comment">
-                <el-option label="全部" value></el-option>
-                <el-option label="禁言用户" value="1"></el-option>
-                <el-option label="非禁言用户" value="0"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="禁止上传讲解">
-              <el-select v-model="search_form.no_upload_explain">
-                <el-option label="全部" value></el-option>
-                <el-option label="禁止上传讲解用户" value="1"></el-option>
-                <el-option label="非禁止上传讲解用户" value="0"></el-option>
-              </el-select>
+              <el-input v-model="search_form.name"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="search">查询</el-button>
+              <el-button type="primary" @click="get_user()">查询</el-button>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="addUserDialogShow = true">添加</el-button>
             </el-form-item>
           </el-form>
         </div>
       </el-header>
+      <!-- 表格主体 -->
       <el-main>
-        <el-table
-          :data="user_list"
-          height="750"
-          border
-          style="width: 100%"
-          :default-sort="{prop: 'id', order: 'descending'}"
-        >
-          <el-table-column type="expand">
+        <el-table :data="user_list" height="750" border style="width: 100%">
+          <!-- <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="left">
-                <div v-if="props.row.user_mail_address">
-                  <el-form-item label="用户邮箱">
+                <div v-if="props.row.name">
+                  <el-form-item label="用户名">
                     <span>{{props.row.user_mail_address}}</span>
                   </el-form-item>
                 </div>
               </el-form>
             </template>
-          </el-table-column>
-
-          <el-table-column label="用户ID" prop="id" width="120" :sortable="true"></el-table-column>
-          <el-table-column label="用户名" prop="name" width="180" :sortable="true"></el-table-column>
-          <el-table-column label="邮箱地址" prop="mail_address" width="250"></el-table-column>
-          <el-table-column label="角色名" prop="role_name" width="150">
-            <template slot-scope="scope">
-              <span v-if="scope.row.role_name == 'admin'">管理员</span>
-              <span v-if="scope.row.role_name == 'root'">超级管理员</span>
-              <span v-if="scope.row.role_name == 'user'">普通用户</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="发布评论" width="150" prop="no_comment">
-            <template slot-scope="scope">
-              <span v-if="scope.row.no_comment == 1">禁止评论</span>
-              <span v-if="scope.row.no_comment == 0">允许评论</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="上传讲解" width="150" prop="no_upload_explain">
-            <template slot-scope="scope">
-              <span v-if="scope.row.no_upload_explain == 1">禁止上传讲解</span>
-              <span v-if="scope.row.no_upload_explain == 0">允许上传讲解</span>
-            </template>
-          </el-table-column>
-
+          </el-table-column> -->
+          <el-table-column
+            type="index"
+            label="序号"
+            width="120"
+          ></el-table-column>
+          <el-table-column
+            label="用户名"
+            prop="name"
+            width="250"
+          ></el-table-column>
+          <el-table-column
+            label="密码"
+            prop="password"
+            width="250"
+          ></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <el-button size="mini" @click="toComment(scope.row)">查看评论</el-button>
-              <el-button size="mini" @click="toExplain(scope.row)">查看讲解</el-button>
-              <el-button size="mini" @click="wantSetPermission(scope.row)">设置权限</el-button>
-              <el-button size="mini" @click="wantSetPassword(scope.row)">重置密码</el-button>
+              <el-button size="mini" @click="setUser(scope.row)"
+                >修改</el-button
+              >
+              <el-button size="mini" @click="deleteUser(scope.row)"
+                >删除</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
       </el-main>
-
-      <el-footer>
-        <div class="page-box">
-          <div class="block">
-            <el-pagination
-              @size-change="ppnChange"
-              @current-change="pageChange"
-              :current-page="search_form.page"
-              :page-sizes="[15,30,50,100,200,400,800]"
-              :page-size="search_form.ppn"
-              :total="user_num"
-              layout="total, sizes, prev, pager, next, jumper"
-            ></el-pagination>
-          </div>
-        </div>
-      </el-footer>
     </el-container>
 
+    <!-- 添加用户会话框 -->
+    <el-dialog title="添加用户" :visible.sync="addUserDialogShow">
+      <el-form :model="add_user_form">
+        <el-form-item label="用户名" :label-width="formLabelWidth">
+          <el-input
+            v-model="add_user_form.name"
+            autocomplete="off"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="密码" :label-width="formLabelWidth">
+          <el-input
+            v-model="add_user_form.password"
+            autocomplete="off"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addUserDialogShow = false">取 消</el-button>
+        <el-button type="primary" @click="confirmAddUser()">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 设置密码会话框 -->
     <el-dialog title="重设密码" :visible.sync="setPasswordDialogShow">
       <el-form :model="set_password_form">
         <el-form-item label="新密码" :label-width="formLabelWidth">
-          <el-input v-model="set_password_form.password1" autocomplete="off"></el-input>
+          <el-input
+            v-model="set_password_form.password1"
+            autocomplete="off"
+          ></el-input>
         </el-form-item>
         <el-form-item label="确认密码" :label-width="formLabelWidth">
-          <el-input v-model="set_password_form.password2" autocomplete="off"></el-input>
+          <el-input
+            v-model="set_password_form.password2"
+            autocomplete="off"
+          ></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="setPasswordDialogShow = false">取 消</el-button>
-        <el-button type="primary" @click="setUserPassword" :loading="setUserPasswordLoading">确 定</el-button>
+        <el-button type="primary" @click="confirmSetUser()">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="设置权限" :visible.sync="setPermissionDialogShow">
-      <el-form :model="set_permission_form">
-        <el-form-item label="禁止评论" :label-width="formLabelWidth">
-          <el-switch
-            v-model="set_permission_form.no_comment"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-          ></el-switch>
-        </el-form-item>
-        <el-form-item label="禁止上传讲解" :label-width="formLabelWidth">
-          <el-switch
-            v-model="set_permission_form.no_upload_explain"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-          ></el-switch>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="setPermissionDialogShow = false">取 消</el-button>
-        <el-button type="primary" @click="setUserPermission" :loading="setUserPermissionLoading">确 定</el-button>
-      </div>
+
+    <!-- 删除用户会话框 -->
+    <el-dialog
+      title="确认删除"
+      :visible.sync="deleteUserDialogShow"
+      width="30%"
+    >
+      <span>确认删除用户？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deleteUserDialogShow = false">取 消</el-button>
+        <el-button type="primary" @click="confirmDeleteUser()">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -150,42 +123,43 @@
 export default {
   data() {
     return {
-      have_param: false,
+      //控制加载的变量
+      table_loading : false,
 
-      setPermissionDialogShow: false,
+      //控制会话框相关变量
+      deleteUserDialogShow: false,
       setPasswordDialogShow: false,
+      addUserDialogShow:false,
 
-      table_loading: false,
-     
-      setUserPermissionLoading: false,
-      setUserPasswordLoading: false,
-
+      //用户数据
       user_num: 0,
       user_list: [],
 
-      set_permission_form: {
-        no_comment: "",
-        no_upload_explain: "",
-        user_id: ""
-      },
-
+      //修改密码相关数据
       set_password_form: {
         password1: "",
         password2: "",
-        user_id: ""
+        name: "",
       },
 
+      //删除用户相关数据
+      delete_user_form: {
+        name: "",
+      },
+
+      //添加用户相关数据
+      add_user_form: {
+        name: "",
+        password: ""
+      },
+
+      //搜索框相关数据
       search_form: {
-        user_name: "",
-        mail_address: "",
-        no_comment: "",
-        no_upload_explain: "",
-        user_id: "",
-        page: 1,
-        ppn: 15
+        name: "",
       },
 
-      formLabelWidth: "120px"
+      //样式使用的变量
+      formLabelWidth: "120px",
     };
   },
   computed: {},
@@ -193,7 +167,7 @@ export default {
     get_user() {
       let vm = this;
       vm.table_loading = true;
-      let baseurl = "/api/web/get_user?";
+      let baseurl = "/api/get_user?";
       for (let key in vm.search_form) {
         if (vm.search_form[key] != "") {
           baseurl += key + "=" + vm.search_form[key] + "&";
@@ -201,208 +175,162 @@ export default {
       }
       vm.$http
         .get(baseurl)
-        .then(res => {
+        .then((res) => {
           if (res.data.status == 1) {
-            vm.user_list = res.data.data.user_list;
+            vm.user_list = res.data.data.data;
+            vm.user_num = res.data.data.data.length;
             vm.$message({
               message: res.data.data.msg,
-              center: true
-            });
-          } else {
-            vm.$message({
-              message: res.data.error_des
-            });
-          }
-          vm.table_loading = false;
-        })
-        .catch(err => {
-          console.error(err);
-          vm.$message({
-            message: "请求失败，请重试",
-            center: true
-          });
-          vm.table_loading = false;
-        });
-    },
-    get_user_num() {
-      let vm = this;
-      let baseurl = "/api/web/get_user_num?";
-      for (let key in vm.search_form) {
-        if (key == "ppn" || key == "page") continue;
-        if (vm.search_form[key] != "") {
-          baseurl += key + "=" + vm.search_form[key] + "&";
-        }
-      }
-      vm.$http
-        .get(baseurl)
-        .then(res => {
-          if (res.data.status == 1) {
-            vm.user_num = res.data.data.user_num;
-            vm.$message({
-              message: res.data.data.msg,
-              center: true
-            });
-          } else {
-            vm.$message({
-              message: res.data.error_des
-            });
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          vm.$message({
-            message: "请求失败，请重试",
-            center: true
-          });
-        });
-    },
-    search() {
-      this.get_user();
-      this.get_user_num();
-    },
-    goBack() {
-      this.$router.back();
-    },
-    ppnChange(ppn) {
-      let vm = this;
-      vm.search_form.ppn = ppn;
-      vm.search_form.page = 1;
-      vm.get_user();
-    },
-    pageChange(page) {
-      let vm = this;
-      vm.search_form.page = page;
-      vm.get_user();
-    },
-    toExplain(row) {
-      this.$router.push({
-        path: "/index/explain",
-        query: {
-          user_id: row.id
-        }
-      });
-    },
-    toComment(row) {
-      this.$router.push({
-        path: "/index/comment",
-        query: {
-          user_id: row.id
-        }
-      });
-    },
-    wantSetPermission(row) {
-      let vm = this;
-      vm.set_permission_form.user_id = row.id;
-      vm.set_permission_form.no_comment = row.no_comment ? true : false;
-      vm.set_permission_form.no_upload_explain = row.no_upload_explain
-        ? true
-        : false;
-      vm.setPermissionDialogShow = true;
-    },
-    wantSetPassword(row) {
-      let vm = this;
-      vm.set_password_form.user_id = row.id;
-      vm.set_password_form.password1 = "";
-      vm.set_password_form.password2 = "";
-      vm.setPasswordDialogShow = true;
-    },
-    setUserPermission() {
-      let vm = this;
-      vm.setUserPermissionLoading = true;
-      let param = {};
-      if (vm.set_permission_form.no_comment) {
-        param.no_comment = "1";
-      } else {
-        param.no_comment = "0";
-      }
-      if (vm.set_permission_form.no_upload_explain) {
-        param.no_upload_explain = "1";
-      } else {
-        param.no_upload_explain = "0";
-      }
-      param.user_id = vm.set_permission_form.user_id;
-      vm.$http({
-        url: "/api/web/set_user_permission",
-        method: "post",
-        data: param
-      })
-        .then(res => {
-          vm.setUserPermissionLoading = false;
-          if (res.data.status == 1) {
-            vm.setPermissionDialogShow = false;
-            vm.$message({
-              message: "修改权限成功",
-              center: true
+              center: true,
             });
           } else {
             vm.$message({
               message: res.data.error_des,
-              center: true
+              center: true,
             });
           }
+          vm.table_loading = false;
         })
-        .catch(err => {
-          vm.setUserPermissionLoading = false;
+        .catch((err) => {
           console.error(err);
           vm.$message({
             message: "请求失败，请重试",
-            center: true
+            center: true,
           });
+          vm.table_loading = false;
         });
     },
-    setUserPassword() {
+    setUser(p) {
       let vm = this;
+      vm.setPasswordDialogShow = true;
+      vm.set_password_form.name = p.name;
+    },
+    confirmSetUser() {
+      let vm = this;
+      //如果密码输入不一致，重新输入，清空数据
       if (vm.set_password_form.password1 != vm.set_password_form.password2) {
-        return vm.$message({
-          message: "输入的密码不相同",
-          center: true
+        vm.$message({
+          message: "两次输入密码不一致，请重试",
+          center: true,
         });
+        vm.set_password_form.password1 = "";
+        vm.set_password_form.password2 = "";
+        return;
       }
-      vm.setUserPasswordLoading = true;
+      //如果密码输入一致，发起修改密码的请求
       vm.$http({
-        url: "/api/web/set_user_password",
+        url: "/api/set_user",
         method: "post",
         data: {
-          user_id: vm.set_password_form.user_id,
-          password: vm.set_password_form.password2
-        }
+          name: vm.set_password_form.name,
+          password: vm.set_password_form.password1,
+        },
       })
-        .then(res => {
-          vm.setUserPasswordLoading = false;
-          if (res.data.status == 1) {
-            vm.setPasswordDialogShow = false;
+        .then((res) => {
+          console.log(res);
+          if (res.data.status === 1) {
             vm.$message({
               message: res.data.data.msg,
-              center: true
+              center: true,
             });
+            vm.get_user();
+            //关闭对话框
+            vm.setPasswordDialogShow = false;
+            //清空对话框数据
+            vm.set_password_form.password1 = "";
+            vm.set_password_form.password2 = "";
+            vm.set_password_form.name = "";
           } else {
             vm.$message({
               message: res.data.error_des,
-              center: true
+              center: true,
             });
           }
         })
-        .catch(err => {
-          vm.setUserPasswordLoading = false;
+        .catch((err) => {
           console.error(err);
           vm.$message({
             message: "请求失败，请重试",
-            center: true
+            center: true,
           });
+          vm.setPasswordDialogShow = false;
+          //清空对话框数据
+          vm.set_password_form.password1 = "";
+          vm.set_password_form.password2 = "";
+          vm.set_password_form.name = "";
         });
     },
-    no_use() {}
+    deleteUser(p) {
+      let vm = this;
+      vm.deleteUserDialogShow = true;
+      vm.delete_user_form.name = p.name;
+    },
+    confirmDeleteUser(){
+      let vm = this;
+      vm.$http({
+        'url':'/api/del_user',
+        'method':'post',
+        'data':{
+          'name':vm.delete_user_form.name
+        }
+      }).then(res=>{
+        if(res.data.status === 1){
+          vm.$message({
+            'message':res.data.data.msg,
+            'center':true
+          });
+          vm.get_user();
+          vm.deleteUserDialogShow = false;
+        }else{
+          vm.$message({
+            'message':res.data.error_des,
+            'center':true
+          })
+        }
+      })
+    },
+    confirmAddUser(){
+      let vm = this;
+      vm.$http({
+        'url':'/api/add_user',
+        'method':'post',
+        'data':{
+          'name':vm.add_user_form.name,
+          'password':vm.add_user_form.password
+        }
+      }).then(res=>{
+        if(res.data.status === 1){
+          vm.$message({
+            'message':res.data.data.msg,
+            'center':true
+          })
+          vm.addUserDialogShow = false;
+          vm.add_user_form.name = "";
+          vm.add_user_form.password = "";
+          vm.get_user();
+        }else{
+          vm.$message({
+            'message':res.data.error_des,
+            'center':true
+          })
+        }
+      }).catch(err=>{
+        console.error(err);
+        vm.$message({
+          'message':'请求出错,请重试',
+          'center':true
+        })
+        vm.addUserDialogShow = false;
+      })
+    },
+    no_use() {},
   },
 
   //生命周期函数
   created() {
     var vm = this;
-    if (vm.$route.query.user_id != undefined) {
-      vm.have_param = true;
-      vm.search_form.user_id = vm.$route.query.user_id;
-    }
-    vm.search();
-  }
+    vm.get_user();
+  },
 };
 </script>
 

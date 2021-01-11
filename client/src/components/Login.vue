@@ -56,10 +56,9 @@ export default {
     onSubmit() {
       var vm = this;
       vm.fullscreenLoading = true;
-
       vm.$http({
         method: "post",
-        url: "/api/web/login",
+        url: "/api/login",
         data: {
           name: vm.form.name,
           password: vm.form.password
@@ -67,14 +66,17 @@ export default {
       })
         .then(function(res) {
           vm.fullscreenLoading = false;
+          console.log(res);
           if (res.data.status == 1) {
             //设置登录状态
             vm.$store.commit("setLoginStatu", true);
-            vm.$store.commit("setUserInfo", res.data.data);
+            vm.$store.commit("setUserInfo", {
+              'name':vm.form.name
+            });
             vm.$message({
               message: res.data.data.msg,
               center: true
-            });
+            }); 
             vm.$router.replace({
               path: "/index/main"
             });
@@ -83,6 +85,7 @@ export default {
               message: res.data.error_des,
               center: true
             });
+            vm.reset();
           }
         })
         .catch(function(err) {
@@ -99,32 +102,32 @@ export default {
       this.form.password = "";
     }
   },
-  beforeCreate() {
-    var vm = this;
-    document.title = "博物馆后台管理系统登录页面";
-    //检查cookie是否已登录
-    vm.$http({
-      method: "get",
-      url: "/api/web/get_login_state"
-    })
-      .then(res => {
-        console.log(res);
-        if (res.data.data.is_login) {
-          vm.$store.commit("setLoginStatu", true);
-          vm.$store.commit("setUserInfo", res.data.data);
-          vm.$router.replace({
-            path: "/index/main"
-          });
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        vm.message({
-          message: "获取当前登录状态失败",
-          center: true
-        });
-      });
-  }
+  // beforeCreate() {
+  //   var vm = this;
+  //   document.title = "博物馆后台管理系统登录页面";
+  //   //检查cookie是否已登录
+  //   vm.$http({
+  //     method: "get",
+  //     url: "/api/get_login_state"
+  //   })
+  //     .then(res => {
+  //       console.log(res);
+  //       if (res.data.data.is_login) {
+  //         vm.$store.commit("setLoginStatu", true);
+  //         vm.$store.commit("setUserInfo", res.data.data);
+  //         vm.$router.replace({
+  //           path: "/index/main"
+  //         });
+  //       }
+  //     })
+  //     .catch(err => {
+  //       console.error(err);
+  //       vm.message({
+  //         message: "获取当前登录状态失败",
+  //         center: true
+  //       });
+  //     });
+  // }
 };
 </script>
 
