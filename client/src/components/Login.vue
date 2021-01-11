@@ -4,36 +4,33 @@
       <el-header></el-header>
       <el-main>
         <div class="login-form-box">
-          <el-form>
-            <el-form-item>
-              <el-input prefix-icon="el-icon-user" placeholder="请输入用户名" v-model="form.name"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-input
-                prefix-icon="el-icon-user"
-                placeholder="请输入密码"
-                v-model="form.password"
-                type="password"
-              ></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-row>
-                <el-col :span="24">
-                  <el-button
-                    style="width:100%"
-                    type="primary"
-                    @click="onSubmit"
-                    v-loading.fullscreen.lock="fullscreenLoading"
-                  >登录</el-button>
-                </el-col>
-              </el-row>
-              <el-row style="margin-top:10px">
-                <el-col :span="24">
-                  <el-button style="width:100%" type="info" @click="reset">重置</el-button>
-                </el-col>
-              </el-row>
-            </el-form-item>
-          </el-form>
+                <el-form
+                   :model="user"
+                   :rules="rules"
+                   ref="ruleForm"
+                   class="demo-ruleForm"
+                >
+                   <el-form-item prop="username">
+                    <el-input
+                      v-model="user.username"
+                      @focus="clearprams('username')"
+                      placeholder="请输入用户名"
+                    >
+                      <i slot="prefix" class="el-input__icon el-icon-user-solid"></i
+                    ></el-input>
+                  </el-form-item>
+                  <el-form-item prop="password">
+                  <!--使用获得焦点，清除之前判断结果 -->
+                    <el-input
+                        v-model="user.password"
+                        type="password"
+                        @focus="clearprams('password')"
+                        placeholder="请输入密码"
+                    >
+                        <i slot="prefix" class="el-input__icon el-icon-key"></i
+                    ></el-input>
+                </el-form-item>
+            </el-form>
         </div>
       </el-main>
       <el-footer></el-footer>
@@ -42,14 +39,33 @@
 </template>
 
 <script>
+import { login } from "@/apis/user";
 export default {
   data() {
     return {
-      fullscreenLoading: false,
-      form: {
-        name: "",
-        password: ""
-      }
+      user: {
+        username: "",
+        password: "",
+      },
+      rules: {
+        username: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+          {
+            pattern: /^1\d{4}$|(^(13[0-9]|14[5|7]|15[0|1|2|3|4|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$)/,
+            message: "请输入5位或13位电话号码",
+            trigger: "blur",
+          },
+        ],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          {
+            min: 3,
+            max: 15,
+            message: "长度在 3 到 15 个字符",
+            trigger: "blur",
+          },
+        ],
+      },
     };
   },
   methods: {
@@ -141,12 +157,10 @@ h1 {
   background-image: url("../assets/login-background-image2.jpg");
   background-size: 100%;
 }
-
 .el-icon-user {
   display: block;
   font-size: 30px;
 }
-
 .login-form-box {
   height: 240px;
   width: 400px;
@@ -154,18 +168,15 @@ h1 {
   padding-bottom: 15px;
   padding-right: 15px;
   padding-left: 15px;
-
   position: absolute;
   margin: auto;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-
   border-radius: 10%;
   background-image: url("../assets/login-form-background-image1.jpg");
 }
-
 .el-input {
   width: 400px;
 }

@@ -1,5 +1,6 @@
 <template>
-  <div class="main-component">
+  <div class="index">
+    <!-- 使用element-ui  container页面布局 --> 
     <el-container>
       <el-header height="80px">
         <div class="header-title">
@@ -38,6 +39,7 @@
     </el-container>
   </div>
 </template>
+
 
 <script>
 export default {
